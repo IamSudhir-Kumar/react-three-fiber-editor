@@ -1,21 +1,34 @@
-import { useSearchParams } from 'react-router-dom';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import ModelViewer from '../components/ModelViewer';
+import { useEffect, useState } from "react";
 
 const WebARView = () => {
-  const [searchParams] = useSearchParams();
-  const modelUrl = searchParams.get('model');
+  const [modelUrl, setModelUrl] = useState(null);
+
+  useEffect(() => {
+    fetch("/latest-model.json")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.modelUrl) {
+          setModelUrl(data.modelUrl);
+        }
+      })
+      .catch((error) => console.error("Error fetching model:", error));
+  }, []);
 
   return (
-    <div className="h-screen w-full bg-gray-900">
-      <Canvas>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <Environment preset="studio" />
-        {modelUrl && <ModelViewer url={modelUrl} />}
-        <OrbitControls />
-      </Canvas>
+    <div>
+      {modelUrl ? (
+        <a-scene embedded arjs>
+          {/* Marker-based AR */}
+          <a-marker preset="custom" type="pattern" url="/marker.patt">
+            <a-entity position="0 0 0">
+              <a-gltf-model src={modelUrl} scale="0.5 0.5 0.5"></a-gltf-model>
+            </a-entity>
+          </a-marker>
+          <a-entity camera></a-entity>
+        </a-scene>
+      ) : (
+        <p>Loading model...</p>
+      )}
     </div>
   );
 };
