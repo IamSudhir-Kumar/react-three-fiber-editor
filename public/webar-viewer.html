@@ -6,28 +6,30 @@
     <title>QR Code AR Viewer</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js"></script>
-    <script src="webar.js" defer></script>
 </head>
 <body>
     <a-scene embedded arjs>
-        <a-marker type="pattern" url="pattern-qr.patt">
-            <a-entity id="model" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+        <!-- Marker-based AR -->
+        <a-marker type="pattern" url="marker.patt">
+            <a-entity id="model" position="0 0 0" scale="0.5 0.5 0.5">
+                <!-- Dynamically load the model -->
+                <a-gltf-model id="dynamic-model"></a-gltf-model>
+            </a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
-
     <script>
-        // Get model URL from QR code URL parameters
+        // Get model URL from query parameters
         const urlParams = new URLSearchParams(window.location.search);
         const modelUrl = urlParams.get("model");
-      
+
         if (modelUrl) {
-          // Load the model in AR (MindAR or AR.js logic)
-          console.log("Model to Load:", modelUrl);
+            // Dynamically set the model source
+            const modelElement = document.getElementById("dynamic-model");
+            modelElement.setAttribute("src", modelUrl);
         } else {
-          console.error("No model URL found in QR code.");
+            console.error("No model URL found in query parameters.");
         }
-      </script>
-      
+    </script>
 </body>
 </html>

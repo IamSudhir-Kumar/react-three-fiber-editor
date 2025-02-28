@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 
 const WebARView = () => {
   const [modelUrl, setModelUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
-    fetch("/latest-model.json")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.modelUrl) {
-          setModelUrl(data.modelUrl);
-        }
-      })
-      .catch((error) => console.error("Error fetching model:", error));
+    const urlParams = new URLSearchParams(window.location.search);
+    const model = urlParams.get("model");
+    const image = urlParams.get("image");
+
+    if (model) {
+      setModelUrl(model);
+    }
+    if (image) {
+      setImageUrl(image);
+    }
   }, []);
 
   return (
@@ -28,6 +31,9 @@ const WebARView = () => {
         </a-scene>
       ) : (
         <p>Loading model...</p>
+      )}
+      {imageUrl && (
+        <img src={imageUrl} alt="Uploaded Texture" style={{ width: "100px", marginTop: "10px" }} />
       )}
     </div>
   );
